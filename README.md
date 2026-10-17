@@ -25,5 +25,5 @@
 ## 🚀 Como Executar o Projeto
 
 1. Faça o download ou clone este repositório para o seu computador.
-2. Certifique-se de que os quatro ficheiros principais (`inicio.html`, `estilo.css`, `codigo.js` e `README.md`) estão na mesma pasta.
-3. Faça duplo clique em **`inicio.html`** para abrir o jogo diretamente em qualquer navegador web moderno (Chrome, Firefox, Edge, etc.).
+2. Certifique-se de que os quatro ficheiros principais (`index.html`, `estilo.css`, `codigo.js` e `README.md`) estão na mesma pasta.
+3. Faça duplo clique em **`index.html`** para abrir o jogo diretamente em qualquer navegador web moderno (Chrome, Firefox, Edge, etc.).
