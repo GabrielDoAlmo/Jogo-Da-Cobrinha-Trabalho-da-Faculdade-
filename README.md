@@ -27,3 +27,13 @@
 1. Faça o download ou clone este repositório para o seu computador.
 2. Certifique-se de que os quatro ficheiros principais (`index.html`, `estilo.css`, `codigo.js` e `README.md`) estão na mesma pasta.
 3. Faça duplo clique em **`index.html`** para abrir o jogo diretamente em qualquer navegador web moderno (Chrome, Firefox, Edge, etc.).
+
+---
+
+<div align="center">
+  <h3>🚀 Quer testar o jogo agora mesmo?</h3>
+  
+  <a href="https://gabrieldoalmo.github.io/Jogo-Da-Cobrinha-Trabalho-da-Faculdade-/" target="_blank">
+    <img src="https://img.shields.io/badge/🎮%20JOGAR%20AGORA%20NO%20NAVEGADOR-0a84ff?style=for-the-badge&logoColor=white" alt="Jogar Agora" />
+  </a>
+</div>
