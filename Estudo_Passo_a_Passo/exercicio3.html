@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Exercício 3 - Controles e Eventos de Teclado</title>
+  <style>
+    button {
+      margin: 4px;
+      padding: 8px 12px;
+    }
+
+    #status {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Exercício 3 - Controles e Eventos de Teclado</h1>
+  <p>Use as setas do teclado ou os botões abaixo para testar. A direção atual e a próxima direção são mostradas.</p>
+
+  <div>
+    <button onclick="simularTecla('cima')">↑</button>
+    <button onclick="simularTecla('baixo')">↓</button>
+    <button onclick="simularTecla('esquerda')">←</button>
+    <button onclick="simularTecla('direita')">→</button>
+  </div>
+
+  <div id="status">Direção atual: <span id="dirAtual">direita</span> | Próxima: <span id="proxima">direita</span></div>
+
+  <script>
+    let direcaoAtual = 'direita';
+    let proximaDirecao = 'direita';
+    function configurarControles() {
+      window.addEventListener('keydown', (ev) => {
+        const mapping = {
+          'ArrowUp': 'cima',
+          'ArrowDown': 'baixo',
+          'ArrowLeft': 'esquerda',
+          'ArrowRight': 'direita',
+          // alternativas WASD
+          'w': 'cima',
+          's': 'baixo',
+          'a': 'esquerda',
+          'd': 'direita'
+        };
+        const key = ev.key;
+        const dir = mapping[key] || mapping[key.toLowerCase()];
+        if (dir) {
+          proximaDirecao = dir;
+          atualizarStatus();
+          ev.preventDefault();
+        }
+      });
+    }
+    function atualizarDirecao() {
+      const oposto = {
+        'direita': 'esquerda',
+        'esquerda': 'direita',
+        'cima': 'baixo',
+        'baixo': 'cima'
+      };
+      if (proximaDirecao !== oposto[direcaoAtual]) {
+        direcaoAtual = proximaDirecao;
+        atualizarStatus();
+      } else {
+        console.log('Movimento oposto inválido:', proximaDirecao);
+        proximaDirecao = direcaoAtual;
+        atualizarStatus();
+      }
+    }
+    function obterNovaPosicao(cabeca, direcao) {
+      const nova = { x: cabeca.x, y: cabeca.y };
+      switch (direcao) {
+        case 'direita': nova.x += 1; break;
+        case 'esquerda': nova.x -= 1; break;
+        case 'cima': nova.y -= 1; break;
+        case 'baixo': nova.y += 1; break;
+      }
+      return nova;
+    }
+    function atualizarStatus() {
+      document.getElementById('dirAtual').textContent = direcaoAtual;
+      document.getElementById('proxima').textContent = proximaDirecao;
+    }
+    function simularTecla(dir) {
+      proximaDirecao = dir;
+      atualizarStatus();
+    }
+    configurarControles();
+    setInterval(() => {
+      atualizarDirecao();
+      const cabecaEx = { x: 5, y: 5 };
+      const novaPos = obterNovaPosicao(cabecaEx, direcaoAtual);
+      console.log('Direção atual:', direcaoAtual, '-> nova posição de (5,5):', novaPos);
+    }, 2000);
+  </script>
+</body>
+
+</html>

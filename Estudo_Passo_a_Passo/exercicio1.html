@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Exercício 1 - Manipulação de Arrays (Cobra Virtual)</title>
+</head>
+
+<body>
+  <h1>Exercício 1 - Manipulação de Arrays (Cobra Virtual)</h1>
+  <script>
+    let cobra = [
+      { x: 5, y: 5 },
+      { x: 4, y: 5 },
+      { x: 3, y: 5 }
+    ];
+    function moverCobra(direcao) {
+      const head = cobra[0];
+      let novaCabeca = { x: head.x, y: head.y };
+      switch (direcao) {
+        case 'direita': novaCabeca.x += 1; break;
+        case 'esquerda': novaCabeca.x -= 1; break;
+        case 'cima': novaCabeca.y -= 1; break;
+        case 'baixo': novaCabeca.y += 1; break;
+        default: console.warn('Direção inválida:', direcao);
+      }
+      cobra.pop();
+      cobra.unshift(novaCabeca);
+      return cobra;
+    }
+    function crescerCobra() {
+      const cauda = cobra[cobra.length - 1];
+      cobra.push({ x: cauda.x, y: cauda.y });
+      return cobra;
+    }
+    function verificarColisao() {
+      const head = cobra[0];
+      for (let i = 1; i < cobra.length; i++) {
+        if (cobra[i].x === head.x && cobra[i].y === head.y) return true;
+      }
+      return false;
+    }
+    console.log('Estado inicial:', JSON.parse(JSON.stringify(cobra)));
+    console.log('Mover para direita:');
+    console.log(moverCobra('direita'));
+    console.log('Crescer cobra:');
+    console.log(crescerCobra());
+    console.log('Forçando colisão (mesma posição da cabeça):');
+    cobra.unshift({ x: cobra[1].x, y: cobra[1].y });
+    console.log('Colisão detectada?', verificarColisao());
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Exercício 4 - Pontuação e localStorage</title>
+  <style>
+    button {
+      margin: 6px;
+      padding: 8px 12px;
+    }
+
+    #placar {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Exercício 4 - Pontuação e localStorage</h1>
+  <p>Use os botões para simular pontos e salvar/ler o recorde.</p>
+
+  <div>
+    <button id="btnAdd">Adicionar ponto</button>
+    <button id="btnSalvar">Salvar recorde (se for maior)</button>
+    <button id="btnReset">Reiniciar (pontuação atual = 0)</button>
+  </div>
+
+  <div id="placar">Pontos: 0 | Recorde: 0</div>
+  <script>
+    let pontuacao = 0;
+    let melhorPontuacao = 0;
+    const CHAVE = 'snakeRecord';
+    function carregarMelhorPontuacao() {
+      const raw = localStorage.getItem(CHAVE);
+      if (raw !== null) {
+        const val = Number(raw);
+        if (!Number.isNaN(val)) melhorPontuacao = val;
+      } else {
+        melhorPontuacao = 0;
+      }
+      atualizarPlacar();
+    }
+    function salvarMelhorPontuacao() {
+      if (pontuacao > melhorPontuacao) {
+        melhorPontuacao = pontuacao;
+        localStorage.setItem(CHAVE, String(melhorPontuacao));
+        console.log('Novo recorde salvo:', melhorPontuacao);
+      } else {
+        console.log('Pontuação não supera recorde atual.');
+      }
+      atualizarPlacar();
+    }
+    function atualizarPlacar() {
+      document.getElementById('placar').textContent = `Pontos: ${pontuacao} | Recorde: ${melhorPontuacao}`;
+    }
+    function reiniciarJogo() {
+      pontuacao = 0;
+      atualizarPlacar();
+    }
+    document.getElementById('btnAdd').addEventListener('click', () => {
+      pontuacao++;
+      atualizarPlacar();
+    });
+    document.getElementById('btnSalvar').addEventListener('click', () => {
+      salvarMelhorPontuacao();
+    });
+    document.getElementById('btnReset').addEventListener('click', () => {
+      reiniciarJogo();
+    });
+    carregarMelhorPontuacao();
+  </script>
+</body>
+
+</html>

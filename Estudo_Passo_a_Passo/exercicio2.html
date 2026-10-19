@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Exercício 2 - Grid e Posicionamento</title>
+</head>
+
+<body>
+  <h1>Exercício 2 - Grid e Posicionamento</h1>
+  <script>
+    const TAMANHO_TABULEIRO = 20;
+    function gerarPosicaoAleatoria() {
+      return {
+        x: Math.floor(Math.random() * TAMANHO_TABULEIRO),
+        y: Math.floor(Math.random() * TAMANHO_TABULEIRO)
+      };
+    }
+    function estaDentroDoLimite(x, y) {
+      return x >= 0 && x < TAMANHO_TABULEIRO && y >= 0 && y < TAMANHO_TABULEIRO;
+    }
+    function desenharNoConsole(cobra, comida) {
+      const linhas = [];
+      for (let y = 0; y < TAMANHO_TABULEIRO; y++) {
+        let linha = '';
+        for (let x = 0; x < TAMANHO_TABULEIRO; x++) {
+          let char = '.';
+          if (comida.x === x && comida.y === y) char = 'x';
+          for (let seg of cobra) {
+            if (seg.x === x && seg.y === y) {
+              char = 'o';
+              break;
+            }
+          }
+          linha += char;
+        }
+        linhas.push(linha);
+      }
+      console.log(linhas.join('\n'));
+    }
+    const cobra = [
+      { x: 6, y: 4 },
+      { x: 6, y: 5 },
+      { x: 6, y: 6 }
+    ];
+    const comida = { x: 7, y: 4 };
+    console.log('Posição aleatória exemplo:', gerarPosicaoAleatoria());
+    console.log('Esta dentro do limite (10,10)?', estaDentroDoLimite(10, 10));
+    console.log('Grid:');
+    desenharNoConsole(cobra, comida);
+  </script>
+</body>
+
+</html>

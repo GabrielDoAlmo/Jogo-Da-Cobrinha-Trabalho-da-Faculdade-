@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Exercício 5 - Game Loop e Lógica Principal (Snake)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    #tabuleiro {
+      display: grid;
+      gap: 1px;
+      background: #333;
+      width: 420px;
+    }
+
+    .celula {
+      width: 20px;
+      height: 20px;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .cobra {
+      background: green;
+    }
+
+    .comida {
+      background: red;
+      color: white;
+    }
+
+    #controles {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 6px 10px;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Exercício 5 - Snake (base)</h1>
+  <div>
+    <div id="placar">Pontos: 0 | Recorde: 0</div>
+    <div id="controles">
+      <button id="btnStart">Iniciar</button>
+      <button id="btnReiniciar">Reiniciar</button>
+    </div>
+  </div>
+  <div id="tabuleiroWrap" style="margin-top:10px;">
+    <div id="tabuleiro"></div>
+  </div>
+  <script>
+    const TAMANHO_TABULEIRO = 20;
+    let jogoAtivo = false;
+    const VELOCIDADE = 200; // ms
+    let cobra = [];
+    let comida = null;
+    let direcaoAtual = 'direita';
+    let proximaDirecao = 'direita';
+    let pontuacao = 0;
+    let melhorPontuacao = 0;
+    const CHAVE = 'snakeRecord';
+    let timeoutId = null;
+    function inicializarJogo() {
+      const tab = document.getElementById('tabuleiro');
+      tab.style.gridTemplateColumns = `repeat(${TAMANHO_TABULEIRO}, 20px)`;
+      tab.innerHTML = '';
+      for (let i = 0; i < TAMANHO_TABULEIRO * TAMANHO_TABULEIRO; i++) {
+        const cel = document.createElement('div');
+        cel.className = 'celula';
+        tab.appendChild(cel);
+      }
+      reiniciarJogo();
+      configurarControles();
+      carregarMelhorPontuacao();
+      desenharJogo();
+    }
+    function reiniciarJogo() {
+      cobra = [
+        { x: 5, y: 5 },
+        { x: 4, y: 5 },
+        { x: 3, y: 5 }
+      ];
+      direcaoAtual = 'direita';
+      proximaDirecao = 'direita';
+      pontuacao = 0;
+      gerarComida();
+      jogoAtivo = false;
+      atualizarPlacar();
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    }
+    function carregarMelhorPontuacao() {
+      const raw = localStorage.getItem(CHAVE);
+      if (raw !== null && !Number.isNaN(Number(raw))) melhorPontuacao = Number(raw);
+      else melhorPontuacao = 0;
+      atualizarPlacar();
+    }
+    function salvarMelhorPontuacao() {
+      if (pontuacao > melhorPontuacao) {
+        melhorPontuacao = pontuacao;
+        localStorage.setItem(CHAVE, String(melhorPontuacao));
+      }
+    }
+    function atualizarPlacar() {
+      document.getElementById('placar').textContent = `Pontos: ${pontuacao} | Recorde: ${melhorPontuacao}`;
+    }
+    function gerarComida() {
+      function posValida(pos) {
+        for (let seg of cobra) if (seg.x === pos.x && seg.y === pos.y) return false;
+        return true;
+      }
+      let pos;
+      do {
+        pos = { x: Math.floor(Math.random() * TAMANHO_TABULEIRO), y: Math.floor(Math.random() * TAMANHO_TABULEIRO) };
+      } while (!posValida(pos));
+      comida = pos;
+    }
+    function configurarControles() {
+      window.addEventListener('keydown', (ev) => {
+        const map = { 'ArrowUp': 'cima', 'ArrowDown': 'baixo', 'ArrowLeft': 'esquerda', 'ArrowRight': 'direita' };
+        const dir = map[ev.key];
+        if (dir) {
+          proximaDirecao = dir;
+          ev.preventDefault();
+        }
+      });
+    }
+    function atualizarDirecao() {
+      const oposto = { 'direita': 'esquerda', 'esquerda': 'direita', 'cima': 'baixo', 'baixo': 'cima' };
+      if (proximaDirecao !== oposto[direcaoAtual]) {
+        direcaoAtual = proximaDirecao;
+      }
+    }
+    function obterNovaPosicao(cabeca, direcao) {
+      const nova = { x: cabeca.x, y: cabeca.y };
+      switch (direcao) {
+        case 'direita': nova.x += 1; break;
+        case 'esquerda': nova.x -= 1; break;
+        case 'cima': nova.y -= 1; break;
+        case 'baixo': nova.y += 1; break;
+      }
+      return nova;
+    }
+    function verificarColisaoComCorpo(pos) {
+      for (let seg of cobra) {
+        if (seg.x === pos.x && seg.y === pos.y) return true;
+      }
+      return false;
+    }
+    function estaDentroDoLimite(pos) {
+      return pos.x >= 0 && pos.x < TAMANHO_TABULEIRO && pos.y >= 0 && pos.y < TAMANHO_TABULEIRO;
+    }
+    function moverCobra() {
+      const novaCabeca = obterNovaPosicao(cobra[0], direcaoAtual);
+      if (!estaDentroDoLimite(novaCabeca)) {
+        fimDeJogo();
+        return;
+      }
+      if (verificarColisaoComCorpo(novaCabeca)) {
+        fimDeJogo();
+        return;
+      }
+      cobra.unshift(novaCabeca);
+      if (comida && novaCabeca.x === comida.x && novaCabeca.y === comida.y) {
+        pontuacao += 1;
+        gerarComida();
+        atualizarPlacar();
+      } else {
+        cobra.pop();
+      }
+    }
+    function fimDeJogo() {
+      jogoAtivo = false;
+      salvarMelhorPontuacao();
+      atualizarPlacar();
+      alert('Fim de jogo! Pontos: ' + pontuacao);
+      if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+    }
+    function desenharJogo() {
+      const tab = document.getElementById('tabuleiro');
+      Array.from(tab.children).forEach(c => { c.className = 'celula'; c.textContent = ''; });
+
+      if (comida) {
+        const idx = comida.y * TAMANHO_TABULEIRO + comida.x;
+        const cel = tab.children[idx];
+        cel.classList.add('comida');
+        cel.textContent = 'x';
+      }
+
+      for (let seg of cobra) {
+        const idx = seg.y * TAMANHO_TABULEIRO + seg.x;
+        if (idx >= 0 && idx < tab.children.length) {
+          const cel = tab.children[idx];
+          cel.classList.add('cobra');
+        }
+      }
+    }
+    function gameLoop() {
+      if (!jogoAtivo) return;
+      atualizarDirecao();
+      moverCobra();
+      desenharJogo();
+      timeoutId = setTimeout(gameLoop, VELOCIDADE);
+    }
+    document.getElementById('btnStart').addEventListener('click', () => {
+      if (!jogoAtivo) {
+        jogoAtivo = true;
+        gameLoop();
+      }
+    });
+    document.getElementById('btnReiniciar').addEventListener('click', () => {
+      reiniciarJogo();
+      desenharJogo();
+    });
+    inicializarJogo();
+  </script>
+</body>
+
+</html>
